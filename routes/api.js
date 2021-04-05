@@ -38,6 +38,29 @@ module.exports = function (app) {
         open: true,
         status_text: status_text || ''
       });
+
+      ProjectModel.findOne({ name: project }, (err, projectdata) => {
+        if (!projectdata) {
+          const newProject = new ProjectModel({ name: project });
+          newProject.issues.push(newIssue);
+          newProject.save((err, data) => {
+            if (err || !data) {
+              res.send('There was an error saving in post');
+            } else {
+              res.json(newIssue);
+            }
+          });
+        } else {
+          projectdata.issues.push(newIssue);
+          projectdata.save((err, data) => {
+            if (err || !data) {
+              res.send('There was an error saving in post');
+            } else {
+              res.json(newIssue);
+            }
+          });
+        }
+      });
     })
     
     .put(function (req, res){
